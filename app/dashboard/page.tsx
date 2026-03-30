@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { GroupCard } from "@/components/group-card";
 import { Users, Plus, LogIn } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
