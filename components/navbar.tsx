@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShoppingCart, LayoutDashboard, Users } from "lucide-react";
+import { ShoppingCart, LayoutDashboard, Users, User } from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
 import { Button } from "@/components/ui/button";
 
@@ -29,6 +29,12 @@ export function Navbar({ userEmail }: NavbarProps) {
               <Link href="/groups" className="flex items-center gap-1.5">
                 <Users className="w-4 h-4" />
                 My Groups
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/dashboard/profile" className="flex items-center gap-1.5">
+                <User className="w-4 h-4" />
+                Profile
               </Link>
             </Button>
           </div>

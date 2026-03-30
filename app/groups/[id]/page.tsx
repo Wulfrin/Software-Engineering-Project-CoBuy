@@ -25,8 +25,14 @@ export default async function GroupDetailPage({
 
   const { data: group, error } = await supabase
     .from("groups")
-    .select("*, group_members(user_id, joined_at)")
-    .eq("id", id)
+    .select(`
+      *,
+      id:group_id,
+      leader_id:created_by,
+      invite_code:join_code,
+      group_members(user_id, joined_at)
+    `)
+    .eq("group_id", id)
     .single();
 
   if (error || !group) notFound();

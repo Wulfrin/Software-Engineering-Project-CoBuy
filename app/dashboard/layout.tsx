@@ -8,13 +8,13 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!data?.claims) {
+  if (!user) {
     redirect("/auth/login");
   }
 
-  const userEmail = data.claims.email as string | undefined;
+  const userEmail = user.email;
 
   return (
     <div className="min-h-screen flex flex-col">

@@ -15,7 +15,13 @@ export default async function DashboardPage() {
 
   const { data: groups } = await supabase
     .from("groups")
-    .select("*, group_members(user_id)")
+    .select(`
+      *,
+      id:group_id,
+      leader_id:created_by,
+      invite_code:join_code,
+      group_members(user_id)
+    `)
     .order("created_at", { ascending: false })
     .limit(6);
 
