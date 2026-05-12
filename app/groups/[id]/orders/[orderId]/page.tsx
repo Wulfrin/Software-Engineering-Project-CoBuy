@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OrderAllocationForm } from "@/components/order-allocation-form";
 import { CostSplitTable } from "@/components/cost-split-table";
+import { ContributionTracker } from "@/components/contribution-tracker";
 import { ArrowLeft, Crown, Plus } from "lucide-react";
 
 const statusStyles: Record<string, string> = {
@@ -40,10 +41,8 @@ export default async function OrderDetailPage({
   if (!user) redirect("/auth/login");
 
   const { data: order, error } = await supabase
-    .from("orders")
-    .select("*, products(*), order_items(*)")
-    .eq("order_id", orderId)
-    .single();
+    .from("orders").select("*, products(*), order_items(*)")
+    .eq("order_id", orderId).single();
   if (error || !order) notFound();
 
   const { data: group } = await supabase.from("groups")
@@ -93,7 +92,27 @@ export default async function OrderDetailPage({
               <form action={async () => {
                 "use server";
                 const s = await createClient();
-                await s.from("orders").update({ status: nextStatus, ...(nextStatus === "finalized" ? { finalized_at: new Date().toISOString() } : {}) }).eq("order_id", orderId);
+                const extra = nextStatus === "finalized" ? { finalized_at: new Date().toISOString() } : {};
+                await s.from("orders").update({ status: nextStatus, ...extra }).eq("order_id", orderId);
+                // Notify all group members
+                const { data: gm } = await s.from("group_members").select("user_uuid").eq("group_id", groupId).eq("membership_status", "active");
+                const msgs: Record<string, string> = {
+                  active: `Order "${order.title}" is now active — add your quantities!`,
+                  finalized: `Order "${order.title}" has been finalized. No more changes.`,
+                  completed: `Order "${order.title}" is complete!`,
+                };
+                if (gm?.length) {
+                  const rows = gm
+                    .filter((m: { user_uuid: string }) => m.user_uuid !== user.id)
+                    .map((m: { user_uuid: string }) => ({
+                      user_uuid: m.user_uuid,
+                      title: STATUS_LABELS[order.status] ?? "Order updated",
+                      message: msgs[nextStatus] ?? "",
+                      type: "order",
+                      link: `/groups/${groupId}/orders/${orderId}`,
+                    }));
+                  if (rows.length) await s.from("notifications").insert(rows);
+                }
               }}>
                 <Button size="sm" type="submit">
                   <Crown className="w-4 h-4 mr-1" />{STATUS_LABELS[order.status]}
@@ -122,6 +141,21 @@ export default async function OrderDetailPage({
           </CardHeader>
           <CardContent>
             <CostSplitTable products={order.products ?? []} items={order.order_items ?? []} members={members} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Contribution Tracker — visible once order is active+ */}
+      {order.status !== "draft" && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Contribution Tracker</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ContributionTracker
+              groupId={groupId} orderId={orderId}
+              isLeader={isLeader} currentUserId={user.id}
+            />
           </CardContent>
         </Card>
       )}

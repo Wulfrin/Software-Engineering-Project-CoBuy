@@ -1,11 +1,10 @@
-import Link from "next/link";
-import { ShoppingCart, LayoutDashboard, Users, User } from "lucide-react";
+﻿import Link from "next/link";
+import { ShoppingCart, LayoutDashboard, Users, History } from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
+import { NotificationBell } from "@/components/notification-bell";
 import { Button } from "@/components/ui/button";
 
-interface NavbarProps {
-  userEmail?: string;
-}
+interface NavbarProps { userEmail?: string; }
 
 export function Navbar({ userEmail }: NavbarProps) {
   return (
@@ -21,30 +20,24 @@ export function Navbar({ userEmail }: NavbarProps) {
           <div className="hidden sm:flex items-center gap-1">
             <Button asChild variant="ghost" size="sm">
               <Link href="/dashboard" className="flex items-center gap-1.5">
-                <LayoutDashboard className="w-4 h-4" />
-                Dashboard
+                <LayoutDashboard className="w-4 h-4" />Dashboard
               </Link>
             </Button>
             <Button asChild variant="ghost" size="sm">
               <Link href="/groups" className="flex items-center gap-1.5">
-                <Users className="w-4 h-4" />
-                My Groups
+                <Users className="w-4 h-4" />My Groups
               </Link>
             </Button>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/dashboard/profile" className="flex items-center gap-1.5">
-                <User className="w-4 h-4" />
-                Profile
+              <Link href="/dashboard/history" className="flex items-center gap-1.5">
+                <History className="w-4 h-4" />History
               </Link>
             </Button>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          {userEmail && (
-            <span className="text-sm text-muted-foreground hidden sm:inline truncate max-w-[180px]">
-              {userEmail}
-            </span>
-          )}
+        <div className="flex items-center gap-2">
+          {userEmail && <span className="text-sm text-muted-foreground hidden sm:inline truncate max-w-[160px]">{userEmail}</span>}
+          <NotificationBell />
           <LogoutButton />
         </div>
       </div>
