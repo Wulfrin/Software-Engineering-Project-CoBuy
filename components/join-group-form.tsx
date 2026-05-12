@@ -27,7 +27,7 @@ export function JoinGroupForm() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Failed to join group");
 
-      router.push(`/groups/${data.group_id}`);
+      router.push(`/groups/${data.group.group_id}`);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");

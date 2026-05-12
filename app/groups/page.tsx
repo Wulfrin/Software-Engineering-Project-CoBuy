@@ -18,7 +18,7 @@ export default async function GroupsPage() {
       id:group_id,
       leader_id:created_by,
       invite_code:join_code,
-      group_members(user_id)
+      group_members(user_uuid)
     `)
     .order("created_at", { ascending: false });
 

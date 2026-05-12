@@ -10,13 +10,13 @@ type Group = {
   leader_id: string;
   invite_code: string;
   created_at: string;
-  group_members?: { user_id: string }[];
+  group_members?: { user_uuid: string }[];
 };
 
 const statusStyles: Record<string, string> = {
-  OPEN: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  ORDERING: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  CLOSED: "bg-muted text-muted-foreground",
+  active: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  ordering: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  closed: "bg-muted text-muted-foreground",
 };
 
 export function GroupCard({

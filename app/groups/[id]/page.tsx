@@ -7,9 +7,9 @@ import { CopyInviteButton } from "@/components/copy-invite-button";
 import { ArrowLeft, Crown, Users, Plus, ShoppingCart } from "lucide-react";
 
 const statusStyles: Record<string, string> = {
-  OPEN: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  ORDERING: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  CLOSED: "bg-muted text-muted-foreground",
+  active: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  ordering: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  closed: "bg-muted text-muted-foreground",
 };
 
 export default async function GroupDetailPage({
@@ -30,7 +30,7 @@ export default async function GroupDetailPage({
       id:group_id,
       leader_id:created_by,
       invite_code:join_code,
-      group_members(user_id, joined_at)
+      group_members(user_uuid, joined_at)
     `)
     .eq("group_id", id)
     .single();
@@ -110,12 +110,12 @@ export default async function GroupDetailPage({
           <CardContent>
             <div className="space-y-2">
               {group.group_members?.map(
-                (member: { user_id: string; joined_at: string }) => {
-                  const isMe = member.user_id === user?.id;
-                  const isMemberLeader = member.user_id === group.leader_id;
+                (member: { user_uuid: string; joined_at: string }) => {
+                  const isMe = member.user_uuid === user?.id;
+                  const isMemberLeader = member.user_uuid === group.leader_id;
                   return (
                     <div
-                      key={member.user_id}
+                      key={member.user_uuid}
                       className="flex items-center justify-between text-sm py-1"
                     >
                       <div className="flex items-center gap-2">
@@ -144,7 +144,7 @@ export default async function GroupDetailPage({
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold">Orders</h2>
-          {isLeader && group.status !== "CLOSED" && (
+          {isLeader && group.status !== "closed" && (
             <Button asChild size="sm">
               <Link href={`/groups/${id}/orders/new`}>
                 <Plus className="w-4 h-4 mr-2" />
